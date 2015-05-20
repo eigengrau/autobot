@@ -7,6 +7,10 @@ import re
 import irc.bot
 from threading import Thread
 
+import irc.client
+import irc.buffer
+irc.client.ServerConnection.buffer_class = irc.buffer.LenientDecodingLineBuffer
+
 from commands import throw
 
 
@@ -41,6 +45,8 @@ class AutoBot ( irc.bot.SingleServerIRCBot ):
             #self.log.info('Recovered nick')
 
     def on_privnotice(self, connection, event):
+        if not event.source:
+            return
         source = event.source.nick
         if source and source.lower()  == "nickserv":
             if event.arguments[0].lower().find("identify") >= 0:
